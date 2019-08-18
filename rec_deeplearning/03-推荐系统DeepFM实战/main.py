@@ -18,7 +18,6 @@ with torch.cuda.device(0):
         use_ffm=False,
         use_deep=True
     ).cuda()
-
     deepfm.fit(
         result_dict['index'], 
         result_dict['value'], 
@@ -29,3 +28,26 @@ with torch.cuda.device(0):
         ealry_stopping=True,
         refit=True
     )
+
+# no gpu
+# deepfm = DeepFM.DeepFM(
+#     39,
+#     result_dict['feature_sizes'],
+#     verbose=True,
+#     use_cuda=False, 
+#     weight_decay=0.0001,
+#     use_fm=True,
+#     use_ffm=False,
+#     use_deep=True
+# )
+
+# deepfm.fit(
+#     result_dict['index'], 
+#     result_dict['value'], 
+#     result_dict['label'],
+#     test_dict['index'], 
+#     test_dict['value'], 
+#     test_dict['label'],
+#     ealry_stopping=True,
+#     refit=True
+# )

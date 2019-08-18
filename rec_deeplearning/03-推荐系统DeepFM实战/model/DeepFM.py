@@ -310,7 +310,7 @@ class DeepFM(torch.nn.Module):
                 loss.backward()
                 optimizer.step()
 
-                total_loss += loss.data[0]
+                total_loss += loss.item()
                 if self.verbose:
                     if i % 100 == 99:  # print every 100 mini-batches
                         eval = self.evaluate(batch_xi, batch_xv, batch_y)
