@@ -135,19 +135,19 @@ def gen_emb_input_file(filepath, emb_file, dir_path):
 
 
 # result_dict = read_criteo_data('../data/tiny_test.txt', '../data/category_index.csv', 'test')
-#
 # for item in result_dict['continuous_feat']:
-#     print item
+#     print(item)
+
 # cate_dict = gen_criteo_category_index('../data/train.txt')
 # write_criteo_category_index('../data/category_index.csv',cate_dict)
 
-#gen_criteo_category_emb_from_libffmfile('../data/train.ffm','../data/category_emb.csv')
+# gen_criteo_category_emb_from_libffmfile('../data/train.ffm','../data/category_emb.csv')
 
-#gen_emb_input_file('../data/train.ffm','../data/category_emb.csv','../data/train_input.csv')
+# gen_emb_input_file('../data/train.ffm','../data/category_emb.csv','../data/train_input.csv')
 
 # result = read_criteo_data('../data/tiny_train_input.csv', '../data/category_emb.csv')
 
-# print len(result['label']), len(result['index']), len(result['value'])
-# print result['feature_sizes']
+# print(len(result['label']), len(result['index']), len(result['value']))
+# print(result['feature_sizes'])
 # for item in result['index']:
-#     print len(item)
+#     print(len(item))

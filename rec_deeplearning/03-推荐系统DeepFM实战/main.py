@@ -4,8 +4,8 @@ from utils import data_preprocess
 from model import DeepFM
 import torch
 
-result_dict = data_preprocess.read_criteo_data('./data/tiny_train_input.csv', './data/category_emb.csv')
-test_dict = data_preprocess.read_criteo_data('./data/tiny_test_input.csv', './data/category_emb.csv')
+result_dict = data_preprocess.read_criteo_data('data/tiny_train_input.csv', 'data/category_emb.csv')
+test_dict = data_preprocess.read_criteo_data('data/tiny_test_input.csv', 'data/category_emb.csv')
 
 with torch.cuda.device(0):
     deepfm = DeepFM.DeepFM(
