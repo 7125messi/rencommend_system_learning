@@ -206,11 +206,11 @@ class DeepFM(torch.nn.Module):
                 deep_emb = torch.cat([(torch.sum(emb(Xi[:,i,:]),1).t()*Xv[:,i]).t() for i, emb in enumerate(self.fm_second_order_embeddings)],1)
 
             if self.deep_layers_activation == 'sigmoid':
-                activation = F.sigmoid
+                activation = torch.sigmoid
             elif self.deep_layers_activation == 'tanh':
-                activation = F.tanh
+                activation = torch.tanh
             else:
-                activation = F.relu
+                activation = torch.relu
             if self.is_deep_dropout:
                 deep_emb = self.linear_0_dropout(deep_emb)
             x_deep = self.linear_1(deep_emb)
@@ -401,10 +401,10 @@ class DeepFM(torch.nn.Module):
             if self.use_cuda:
                 batch_xi, batch_xv, batch_y = batch_xi.cuda(), batch_xv.cuda(), batch_y.cuda()
             outputs = model(batch_xi, batch_xv)
-            pred = F.sigmoid(outputs).cpu()
+            pred = torch.sigmoid(outputs).cpu()
             y_pred.extend(pred.data.numpy())
             loss = criterion(outputs, batch_y)
-            total_loss += loss.data[0]*(end-offset)
+            total_loss += loss.item()*(end-offset)
         total_metric = self.eval_metric(y,y_pred)
         return total_loss/x_size, total_metric
 
@@ -443,7 +443,7 @@ class DeepFM(torch.nn.Module):
             Xi, Xv = Xi.cuda(), Xv.cuda()
 
         model = self.eval()
-        pred = F.sigmoid(model(Xi, Xv)).cpu()
+        pred = torch.sigmoid(model(Xi, Xv)).cpu()
         return (pred.data.numpy() > 0.5)
 
     def predict_proba(self, Xi, Xv):
@@ -459,7 +459,7 @@ class DeepFM(torch.nn.Module):
             Xi, Xv = Xi.cuda(), Xv.cuda()
 
         model = self.eval()
-        pred = F.sigmoid(model(Xi, Xv)).cpu()
+        pred = torch.sigmoid(model(Xi, Xv)).cpu()
         return pred.data.numpy()
 
     def inner_predict(self, Xi, Xv):
@@ -469,7 +469,7 @@ class DeepFM(torch.nn.Module):
         :return: output, numpy
         """
         model = self.eval()
-        pred = F.sigmoid(model(Xi, Xv)).cpu()
+        pred = torch.sigmoid(model(Xi, Xv)).cpu()
         return (pred.data.numpy() > 0.5)
 
     def inner_predict_proba(self, Xi, Xv):
@@ -479,7 +479,7 @@ class DeepFM(torch.nn.Module):
         :return: output, numpy
         """
         model = self.eval()
-        pred = F.sigmoid(model(Xi, Xv)).cpu()
+        pred = torch.sigmoid(model(Xi, Xv)).cpu()
         return pred.data.numpy()
 
     def evaluate(self, Xi, Xv, y):
