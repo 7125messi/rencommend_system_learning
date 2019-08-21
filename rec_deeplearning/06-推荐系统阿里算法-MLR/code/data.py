@@ -3,8 +3,8 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
 def get_data():
-    train_data = pd.read_table("../data/adult.data",header=None,delimiter=',')
-    test_data = pd.read_table("../data/adult.test",header=None,delimiter=',')
+    train_data = pd.read_csv("../data/adult.data",header=None,delimiter=',',encoding='utf-8')
+    test_data = pd.read_csv("../data/adult.test",header=None,delimiter=',',encoding='utf-8',skiprows = 1)
 
     all_columns = ['age','workclass','fnlwgt','education','education-num',
                         'marital-status','occupation','relationship','race','sex',
