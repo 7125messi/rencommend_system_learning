@@ -19,7 +19,7 @@ tf.set_random_seed(1234)
 train_batch_size = 32
 test_batch_size = 512
 
-with open('dataset.pkl', 'rb') as f:
+with open('../raw_data/dataset.pkl', 'rb') as f:
     train_set = pickle.load(f)
     test_set = pickle.load(f)
     cate_list = pickle.load(f)
