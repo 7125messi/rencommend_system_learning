@@ -1,5 +1,7 @@
 import tensorflow as tf
 
+tf.compat.v1.disable_v2_behavior()
+
 """
 Dice激活函数
 这里实现的Dice激活函数没有根据上一步的均值方差来计算这一步的均值方差，而是直接计算了这个batch的均值方差。我们可以根据计算出的均值方差对x进行标准化(代码中被注释掉了)，也可以直接调用batch_normalization来对输入进行标准化。
@@ -8,8 +10,8 @@ Dice激活函数
 
 def dice(_x,axis=-1,epsilon=0.0000001,name=''):
 
-    alphas = tf.get_variable('alpha'+name,_x.get_shape()[-1],
-                             initializer = tf.constant_initializer(0.0),
+    alphas = tf.compat.v1.get_variable('alpha'+name,_x.get_shape()[-1],
+                             initializer = tf.compat.v1.constant_initializer(0.0),
                              dtype=tf.float32)
 
     input_shape = list(_x.get_shape())
@@ -27,7 +29,7 @@ def dice(_x,axis=-1,epsilon=0.0000001,name=''):
     std = tf.sqrt(std)
     brodcast_std = tf.reshape(std, broadcast_shape) #[1 * hidden_unit_size]
     # x_normed = (_x - brodcast_mean) / (brodcast_std + epsilon)
-    x_normed = tf.layers.batch_normalization(_x, center=False, scale=False)  # a simple way to use BN to calculate x_p
+    x_normed = tf.compat.v1.layers.batch_normalization(_x, center=False, scale=False)  # a simple way to use BN to calculate x_p
     x_p = tf.sigmoid(x_normed)
 
     return alphas * (1.0 - x_p) * _x + x_p * _x

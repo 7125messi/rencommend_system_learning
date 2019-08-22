@@ -1,27 +1,28 @@
 import tensorflow as tf
 
-from Dice import dice
+from dice import dice
 
+tf.compat.v1.disable_v2_behavior()
 
 class Model(object):
     def __init__(self,user_count,item_count,cate_count,cate_list):
 
-        # self.u = tf.placeholder(tf.int32,[None,],name='user')
-        self.i = tf.placeholder(tf.int32,[None,],name='item')
-        self.j = tf.placeholder(tf.int32,[None,],name='item_j')
-        self.y = tf.placeholder(tf.float32,[None,],name='label')
-        self.hist_i = tf.placeholder(tf.int32,[None,None],name='history_i')
-        self.sl = tf.placeholder(tf.int32, [None,] , name='sequence_length')
+        # self.u = tf.compat.v1.placeholder(tf.int32,[None,],name='user')
+        self.i = tf.compat.v1.placeholder(tf.int32,[None,],name='item')
+        self.j = tf.compat.v1.placeholder(tf.int32,[None,],name='item_j')
+        self.y = tf.compat.v1.placeholder(tf.float32,[None,],name='label')
+        self.hist_i = tf.compat.v1.placeholder(tf.int32,[None,None],name='history_i')
+        self.sl = tf.compat.v1.placeholder(tf.int32, [None,] , name='sequence_length')
 
-        self.lr = tf.placeholder(tf.float64,name='learning_rate')
+        self.lr = tf.compat.v1.placeholder(tf.float64,name='learning_rate')
 
         hidden_units = 32
 
-        # user_emb_w = tf.get_variable("user_emb_w",[user_count,hidden_units])
-        item_emb_w = tf.get_variable("item_emb_w",[item_count,hidden_units//2])
-        item_b = tf.get_variable("item_b",[item_count],initializer=tf.constant_initializer(0.0))
+        # user_emb_w = tf.compat.v1.get_variable("user_emb_w",[user_count,hidden_units])
+        item_emb_w = tf.compat.v1.get_variable("item_emb_w",[item_count,hidden_units//2])
+        item_b = tf.compat.v1.get_variable("item_b",[item_count],initializer=tf.compat.v1.constant_initializer(0.0))
 
-        cate_emb_w = tf.get_variable("cate_emb_w",[cate_count,hidden_units//2])
+        cate_emb_w = tf.compat.v1.get_variable("cate_emb_w",[cate_count,hidden_units//2])
         cate_list = tf.convert_to_tensor(cate_list,dtype=tf.int64)
 
         # u_emb = tf.nn.embedding_lookup(user_emb_w,self.u)
@@ -50,29 +51,29 @@ class Model(object):
 
         hist = attention(i_emb,h_emb,self.sl)
 
-        hist = tf.layers.batch_normalization(inputs=hist)
+        hist = tf.compat.v1.layers.batch_normalization(inputs=hist)
         hist = tf.reshape(hist,[-1,hidden_units])
-        hist = tf.layers.dense(hist,hidden_units)
+        hist = tf.compat.v1.layers.dense(hist,hidden_units)
 
         u_emb = hist
 
 
         # fcn begin
         din_i = tf.concat([u_emb, i_emb], axis=-1)
-        din_i = tf.layers.batch_normalization(inputs=din_i, name='b1')
-        d_layer_1_i = tf.layers.dense(din_i, 80, activation=None, name='f1')
+        din_i = tf.compat.v1.layers.batch_normalization(inputs=din_i, name='b1')
+        d_layer_1_i = tf.compat.v1.layers.dense(din_i, 80, activation=None, name='f1')
         d_layer_1_i = dice(d_layer_1_i, name='dice_1_i')
-        d_layer_2_i = tf.layers.dense(d_layer_1_i, 40, activation=None, name='f2')
+        d_layer_2_i = tf.compat.v1.layers.dense(d_layer_1_i, 40, activation=None, name='f2')
         d_layer_2_i = dice(d_layer_2_i, name='dice_2_i')
-        d_layer_3_i = tf.layers.dense(d_layer_2_i, 1, activation=None, name='f3')
+        d_layer_3_i = tf.compat.v1.layers.dense(d_layer_2_i, 1, activation=None, name='f3')
 
         din_j = tf.concat([u_emb, j_emb], axis=-1)
-        din_j = tf.layers.batch_normalization(inputs=din_j, name='b1', reuse=True)
-        d_layer_1_j = tf.layers.dense(din_j, 80, activation=None, name='f1', reuse=True)
+        din_j = tf.compat.v1.layers.batch_normalization(inputs=din_j, name='b1', reuse=True)
+        d_layer_1_j = tf.compat.v1.layers.dense(din_j, 80, activation=None, name='f1', reuse=True)
         d_layer_1_j = dice(d_layer_1_j, name='dice_1_j')
-        d_layer_2_j = tf.layers.dense(d_layer_1_j, 40, activation=None, name='f2', reuse=True)
+        d_layer_2_j = tf.compat.v1.layers.dense(d_layer_1_j, 40, activation=None, name='f2', reuse=True)
         d_layer_2_j = dice(d_layer_2_j, name='dice_2_j')
-        d_layer_3_j = tf.layers.dense(d_layer_2_j, 1, activation=None, name='f3', reuse=True)
+        d_layer_3_j = tf.compat.v1.layers.dense(d_layer_2_j, 1, activation=None, name='f3', reuse=True)
 
         d_layer_3_i = tf.reshape(d_layer_3_i, [-1])
         d_layer_3_j = tf.reshape(d_layer_3_j, [-1])
@@ -92,19 +93,19 @@ class Model(object):
         all_emb = tf.expand_dims(all_emb, 0)
         all_emb = tf.tile(all_emb, [512, 1, 1])
         din_all = tf.concat([u_emb_all, all_emb], axis=-1)
-        din_all = tf.layers.batch_normalization(inputs=din_all, name='b1', reuse=True)
-        d_layer_1_all = tf.layers.dense(din_all, 80, activation=None, name='f1', reuse=True)
+        din_all = tf.compat.v1.layers.batch_normalization(inputs=din_all, name='b1', reuse=True)
+        d_layer_1_all = tf.compat.v1.layers.dense(din_all, 80, activation=None, name='f1', reuse=True)
         d_layer_1_all = dice(d_layer_1_all, name='dice_1_all')
-        d_layer_2_all = tf.layers.dense(d_layer_1_all, 40, activation=None, name='f2', reuse=True)
+        d_layer_2_all = tf.compat.v1.layers.dense(d_layer_1_all, 40, activation=None, name='f2', reuse=True)
         d_layer_2_all = dice(d_layer_2_all, name='dice_2_all')
-        d_layer_3_all = tf.layers.dense(d_layer_2_all, 1, activation=None, name='f3', reuse=True)
+        d_layer_3_all = tf.compat.v1.layers.dense(d_layer_2_all, 1, activation=None, name='f3', reuse=True)
         d_layer_3_all = tf.reshape(d_layer_3_all, [-1, item_count])
 
 
         self.logits_all = tf.sigmoid(item_b + d_layer_3_all)
         # -- fcn end -------
 
-        self.mf_auc = tf.reduce_mean(tf.to_float(x > 0))
+        self.mf_auc = tf.reduce_mean(tf.compat.v1.to_float(x > 0))
         self.score_i = tf.sigmoid(i_b + d_layer_3_i)
         self.score_j = tf.sigmoid(j_b + d_layer_3_j)
         self.score_i = tf.reshape(self.score_i, [-1, 1])
@@ -117,7 +118,7 @@ class Model(object):
         self.global_epoch_step = \
             tf.Variable(0, trainable=False, name='global_epoch_step')
         self.global_epoch_step_op = \
-            tf.assign(self.global_epoch_step, self.global_epoch_step + 1)
+            tf.compat.v1.assign(self.global_epoch_step, self.global_epoch_step + 1)
 
         # loss and train
         self.loss = tf.reduce_mean(
@@ -126,8 +127,8 @@ class Model(object):
                 labels=self.y)
         )
 
-        trainable_params = tf.trainable_variables()
-        self.train_op = tf.train.GradientDescentOptimizer(learning_rate=self.lr).minimize(self.loss)
+        trainable_params = tf.compat.v1.trainable_variables()
+        self.train_op = tf.compat.v1.train.GradientDescentOptimizer(learning_rate=self.lr).minimize(self.loss)
 
     def train(self,sess,uij,l):
         loss,_ = sess.run([self.loss,self.train_op],feed_dict={
@@ -159,11 +160,11 @@ class Model(object):
         })
 
     def save(self, sess, path):
-        saver = tf.train.Saver()
+        saver = tf.compat.v1.train.Saver()
         saver.save(sess, save_path=path)
 
     def restore(self, sess, path):
-        saver = tf.train.Saver()
+        saver = tf.compat.v1.train.Saver()
         saver.restore(sess, save_path=path)
 
 
@@ -195,9 +196,9 @@ def attention(queries,keys,keys_length):
 
     din_all = tf.concat([queries,keys,queries-keys,queries * keys],axis=-1) # B*T*4H
     # 三层全链接
-    d_layer_1_all = tf.layers.dense(din_all, 80, activation=tf.nn.sigmoid, name='f1_att')
-    d_layer_2_all = tf.layers.dense(d_layer_1_all, 40, activation=tf.nn.sigmoid, name='f2_att')
-    d_layer_3_all = tf.layers.dense(d_layer_2_all, 1, activation=None, name='f3_att') #B*T*1
+    d_layer_1_all = tf.compat.v1.layers.dense(din_all, 80, activation=tf.nn.sigmoid, name='f1_att')
+    d_layer_2_all = tf.compat.v1.layers.dense(d_layer_1_all, 40, activation=tf.nn.sigmoid, name='f2_att')
+    d_layer_3_all = tf.compat.v1.layers.dense(d_layer_2_all, 1, activation=None, name='f3_att') #B*T*1
 
     outputs = tf.reshape(d_layer_3_all,[-1,1,tf.shape(keys)[1]]) #B*1*T
 

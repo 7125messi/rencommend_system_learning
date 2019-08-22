@@ -11,10 +11,11 @@ import time
 
 import sys
 
+tf.compat.v1.disable_v2_behavior()
 
 random.seed(1234)
 np.random.seed(1234)
-tf.set_random_seed(1234)
+tf.compat.v1.set_random_seed(1234)
 
 train_batch_size = 32
 test_batch_size = 512
@@ -82,15 +83,14 @@ def _eval(sess,model):
     global best_auc
     if best_auc < test_gauc:
         best_auc = test_gauc
-        model.save(sess, 'save_path/ckpt')
+        model.save(sess, '../save_path/ckpt')
     return test_gauc, Auc
 
 
-
-with tf.Session() as sess:
+with tf.compat.v1.Session() as sess:
     model = Model(user_count,item_count,cate_count,cate_list)
-    sess.run(tf.global_variables_initializer())
-    sess.run(tf.local_variables_initializer())
+    sess.run(tf.compat.v1.global_variables_initializer())
+    sess.run(tf.compat.v1.local_variables_initializer())
 
     lr = 1.0
 
@@ -100,7 +100,8 @@ with tf.Session() as sess:
 
         random.shuffle(train_set)
 
-        epoch_size = round(len(train_set)/ train_batch_size)
+        # epoch_size = round(len(train_set)/ train_batch_size) 80000+
+        epoch_size = 30
 
         loss_sum = 0.0
 
@@ -116,7 +117,7 @@ with tf.Session() as sess:
                     print('Epoch %d Global_step %d\tTrain_loss: %.4f\tEval_GAUC: %.4f\tEval_AUC: %.4f' %
                           (model.global_epoch_step.eval(), model.global_step.eval(),
                            loss_sum / 1000, test_gauc, Auc))
-                    sys.stdout.flush()
+                    # sys.stdout.flush()
                     loss_sum = 0.0
 
                 if model.global_step.eval() % 336000 == 0:
@@ -124,12 +125,8 @@ with tf.Session() as sess:
 
             print('Epoch %d DONE\tCost time: %.2f' %
                   (model.global_epoch_step.eval(), time.time() - start_time))
-            sys.stdout.flush()
+            # sys.stdout.flush()
             model.global_epoch_step_op.eval()
 
         print('best test_gauc:', best_auc)
-        sys.stdout.flush()
-
-
-
-
+        # sys.stdout.flush()
